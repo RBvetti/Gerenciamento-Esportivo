@@ -1,0 +1,56 @@
+import java.time.LocalDateTime;
+
+public class Partida {
+    private Long id;
+    private LocalDateTime dataJogo;
+    private Time timeMandante;
+    private Time timeVisitante;
+    private int placarMandante;
+    private int placarVisitante;
+    private StatusPartida status;
+
+    public Partida(Long id, Time timeMandante, Time timeVisitante, LocalDateTime dataJogo) {
+        if (timeMandante.equals(timeVisitante)) {
+            throw new IllegalArgumentException("Um time não pode jogar contra si mesmo.");
+        }
+        this.id = id;
+        this.timeMandante = timeMandante;
+        this.timeVisitante = timeVisitante;
+        this.dataJogo = dataJogo;
+        this.placarMandante = 0;
+        this.placarVisitante = 0;
+        this.status = StatusPartida.AGENDADO;
+    }
+
+    public void iniciarPartida() {
+        if (this.status != StatusPartida.AGENDADO) {
+            throw new IllegalStateException("A partida não pode ser iniciada no estado atual.");
+        }
+        this.status = StatusPartida.EM_ANDAMENTO;
+    }
+
+    public void atualizarPlacar(int golsMandante, int golsVisitante) {
+        if (this.status != StatusPartida.EM_ANDAMENTO) {
+            throw new IllegalStateException("Só é possível atualizar placar de jogo em andamento.");
+        }
+        this.placarMandante = golsMandante;
+        this.placarVisitante = golsVisitante;
+    }
+
+    public void finalizarPartida() {
+        if (this.status != StatusPartida.EM_ANDAMENTO) {
+            throw new IllegalStateException("A partida precisa estar em andamento para ser finalizada.");
+        }
+        this.status = StatusPartida.FINALIZADO;
+        
+        // Aplica a lógica de vitória ou empate diretamente nos objetos Time
+        if (placarMandante > placarVisitante) {
+            timeMandante.registrarVitoria();
+        } else if (placarVisitante > placarMandante) {
+            timeVisitante.registrarVitoria();
+        } else {
+            timeMandante.adicionarPontos(1);
+            timeVisitante.adicionarPontos(1);
+        }
+    }
+}
