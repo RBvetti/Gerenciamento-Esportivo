@@ -1,0 +1,35 @@
+public class Time {
+    private Long id;
+    private String nome;
+    private int pontos;
+    private int vitorias;
+
+    // Construtor: Força a criação de um Time válido desde o início
+    public Time(Long id, String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do time é obrigatório.");
+        }
+        this.id = id;
+        this.nome = nome;
+        this.pontos = 0;   // Sempre inicializa com 0
+        this.vitorias = 0; // Sempre inicializa com 0
+    }
+
+    // Regra de negócio dentro da classe (não apenas Setters)
+    public void adicionarPontos(int pontosGanhos) {
+        if (pontosGanhos < 0) {
+            throw new IllegalArgumentException("Os pontos não podem ser negativos.");
+        }
+        this.pontos += pontosGanhos;
+    }
+
+    public void registrarVitoria() {
+        this.vitorias++;
+        this.adicionarPontos(3); // Regra padrão: vitória vale 3 pontos
+    }
+
+    // Getters omitidos para brevidade...
+    public String getNome() { return nome; }
+    public int getPontos() { return pontos; }
+    public int getVitorias() { return vitorias; }
+}
