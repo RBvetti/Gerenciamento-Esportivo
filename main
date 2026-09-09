@@ -1,0 +1,24 @@
+public class Main {
+    public static void main(String[] args) {
+        
+        //Instanciando
+        
+        Time timao = new Time(1L, "Corinthians");
+        Time rival = new Time(2L, "São Paulo");
+
+        //Agendando a partida
+        
+        Partida classico = new Partida(100L, timao, rival, LocalDateTime.now().plusDays(1));
+
+        //Executando o fluxo do jogo
+        
+        classico.iniciarPartida();
+        classico.atualizarPlacar(2, 0); 
+        classico.finalizarPartida();
+
+        //Verificando o resultado
+        
+        System.out.println(timao.getNome() + " - Pontos: " + timao.getPontos() + " | Vitórias: " + timao.getVitorias());
+        System.out.println(rival.getNome() + " - Pontos: " + rival.getPontos() + " | Vitórias: " + rival.getVitorias());
+    }
+}
