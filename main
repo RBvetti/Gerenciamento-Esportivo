@@ -1,24 +1,46 @@
+import java.time.LocalDateTime;
+
 public class Main {
     public static void main(String[] args) {
-        
+
         //Instanciando
-        
-        Time timao = new Time(1L, "Corinthians");
-        Time rival = new Time(2L, "São Paulo");
+
+        Campeonato brasileirao = new Campeonato("Campeonato Brasileiro", 2026);
+
+        Time timao = new Time(1L, "mandante");
+        Time rival = new Time(2L, "visitante");
+
+        brasileirao.adicionarTime(mandante);
+        brasileirao.adicionarTime(visitante);
+
+        RegraDePontuacao regra = new RegraPadraoFutebol();
 
         //Agendando a partida
-        
+
         Partida classico = new Partida(100L, timao, rival, LocalDateTime.now().plusDays(1));
 
         //Executando o fluxo do jogo
-        
+
         classico.iniciarPartida();
-        classico.atualizarPlacar(2, 0); 
-        classico.finalizarPartida();
+        classico.atualizarPlacar(2, 0);
+        classico.finalizarPartida(regra);
 
         //Verificando o resultado
-        
-        System.out.println(timao.getNome() + " - Pontos: " + timao.getPontos() + " | Vitórias: " + timao.getVitorias());
-        System.out.println(rival.getNome() + " - Pontos: " + rival.getPontos() + " | Vitórias: " + rival.getVitorias());
+
+        System.out.println(timao.obterEstatisticas());
+        System.out.println(rival.obterEstatisticas());
+        System.out.println(classico);
+
+        //Demonstrando o limite máximo de times do campeonato
+
+        for (int i = 3; i <= 21; i++) {
+            try {
+                brasileirao.adicionarTime(new Time((long) i, "Time " + i));
+            } catch (IllegalStateException limiteAtingido) {
+                System.out.println(limiteAtingido.getMessage());
+            }
+        }
+        System.out.println("Times inscritos: " + brasileirao.getQuantidadeDeTimes()
+            + " | Vagas restantes: " + brasileirao.getVagasRestantes());
     }
 }
