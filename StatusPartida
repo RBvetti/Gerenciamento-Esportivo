@@ -1,5 +1,5 @@
 public enum StatusPartida {
     AGENDADO, 
     EM_ANDAMENTO, 
-    FINALIZADO;
+    FINALIZADO
 }
