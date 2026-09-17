@@ -1,15 +1,19 @@
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Partida {
-    private Long id;
-    private LocalDateTime dataJogo;
-    private Time timeMandante;
-    private Time timeVisitante;
+    private final Long id;
+    private final LocalDateTime dataJogo;
+    private final Time timeMandante;
+    private final Time timeVisitante;
     private int placarMandante;
     private int placarVisitante;
     private StatusPartida status;
 
     public Partida(Long id, Time timeMandante, Time timeVisitante, LocalDateTime dataJogo) {
+        Objects.requireNonNull(timeMandante, "O time mandante é obrigatório.");
+        Objects.requireNonNull(timeVisitante, "O time visitante é obrigatório.");
+        Objects.requireNonNull(dataJogo, "A data do jogo é obrigatória.");
         if (timeMandante.equals(timeVisitante)) {
             throw new IllegalArgumentException("Um time não pode jogar contra si mesmo.");
         }
@@ -33,24 +37,37 @@ public class Partida {
         if (this.status != StatusPartida.EM_ANDAMENTO) {
             throw new IllegalStateException("Só é possível atualizar placar de jogo em andamento.");
         }
+        if (golsMandante < 0 || golsVisitante < 0) {
+            throw new IllegalArgumentException("Os gols não podem ser negativos.");
+        }
         this.placarMandante = golsMandante;
         this.placarVisitante = golsVisitante;
     }
 
-    public void finalizarPartida() {
+    // A lógica de vitória/empate/derrota agora é delegada a uma RegraDePontuacao,
+    // então trocar a regra do campeonato não exige mexer em Partida.
+    public void finalizarPartida(RegraDePontuacao regraDePontuacao) {
         if (this.status != StatusPartida.EM_ANDAMENTO) {
             throw new IllegalStateException("A partida precisa estar em andamento para ser finalizada.");
         }
+        Objects.requireNonNull(regraDePontuacao, "A regra de pontuação é obrigatória.");
         this.status = StatusPartida.FINALIZADO;
-        
-        // Aplica a lógica de vitória ou empate diretamente nos objetos Time
-        if (placarMandante > placarVisitante) {
-            timeMandante.registrarVitoria();
-        } else if (placarVisitante > placarMandante) {
-            timeVisitante.registrarVitoria();
-        } else {
-            timeMandante.adicionarPontos(1);
-            timeVisitante.adicionarPontos(1);
-        }
+        regraDePontuacao.calcularPontos(this);
+    }
+
+    // Getters — necessários para que RegraDePontuacao (e qualquer exibição de resultado)
+    // consiga ler o estado da partida sem quebrar o encapsulamento (não há setters).
+    public Long getId() { return id; }
+    public LocalDateTime getDataJogo() { return dataJogo; }
+    public Time getTimeMandante() { return timeMandante; }
+    public Time getTimeVisitante() { return timeVisitante; }
+    public int getPlacarMandante() { return placarMandante; }
+    public int getPlacarVisitante() { return placarVisitante; }
+    public StatusPartida getStatus() { return status; }
+
+    @Override
+    public String toString() {
+        return String.format("%s %d x %d %s [%s]",
+            timeMandante.getNome(), placarMandante, placarVisitante, timeVisitante.getNome(), status);
     }
 }
