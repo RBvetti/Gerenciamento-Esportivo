@@ -44,8 +44,6 @@ public class Partida {
         this.placarVisitante = golsVisitante;
     }
 
-    // A lógica de vitória/empate/derrota agora é delegada a uma RegraDePontuacao,
-    // então trocar a regra do campeonato não exige mexer em Partida.
     public void finalizarPartida(RegraDePontuacao regraDePontuacao) {
         if (this.status != StatusPartida.EM_ANDAMENTO) {
             throw new IllegalStateException("A partida precisa estar em andamento para ser finalizada.");
@@ -55,8 +53,6 @@ public class Partida {
         regraDePontuacao.calcularPontos(this);
     }
 
-    // Getters — necessários para que RegraDePontuacao (e qualquer exibição de resultado)
-    // consiga ler o estado da partida sem quebrar o encapsulamento (não há setters).
     public Long getId() { return id; }
     public LocalDateTime getDataJogo() { return dataJogo; }
     public Time getTimeMandante() { return timeMandante; }
