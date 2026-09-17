@@ -1,8 +1,14 @@
+import java.util.Objects;
+
 public class Time {
-    private Long id;
-    private String nome;
+    private final Long id;
+    private final String nome;
     private int pontos;
     private int vitorias;
+    private int empates;
+    private int derrotas;
+    private int golsMarcados;
+    private int golsSofridos;
 
     // Construtor: Força a criação de um Time válido desde o início
     public Time(Long id, String nome) {
@@ -11,11 +17,15 @@ public class Time {
         }
         this.id = id;
         this.nome = nome;
-        this.pontos = 0;   // Sempre inicializa com 0
-        this.vitorias = 0; // Sempre inicializa com 0
+        this.pontos = 0;
+        this.vitorias = 0;
+        this.empates = 0;
+        this.derrotas = 0;
+        this.golsMarcados = 0;
+        this.golsSofridos = 0;
     }
 
-    // Regra de negócio dentro da classe (não apenas Setters)
+    // Regras de negócio dentro da classe (não apenas Setters)
     public void adicionarPontos(int pontosGanhos) {
         if (pontosGanhos < 0) {
             throw new IllegalArgumentException("Os pontos não podem ser negativos.");
@@ -28,8 +38,60 @@ public class Time {
         this.adicionarPontos(3); // Regra padrão: vitória vale 3 pontos
     }
 
-    // Getters omitidos para brevidade...
+    public void registrarEmpate() {
+        this.empates++;
+        this.adicionarPontos(1);
+    }
+
+    public void registrarDerrota() {
+        this.derrotas++;
+    }
+
+    public void registrarGols(int marcados, int sofridos) {
+        if (marcados < 0 || sofridos < 0) {
+            throw new IllegalArgumentException("Gols não podem ser negativos.");
+        }
+        this.golsMarcados += marcados;
+        this.golsSofridos += sofridos;
+    }
+
+    public int getSaldoDeGols() {
+        return golsMarcados - golsSofridos;
+    }
+
+    public String obterEstatisticas() {
+        return String.format(
+            "%s | Pontos: %d | V: %d E: %d D: %d | GM: %d GS: %d | SG: %d",
+            nome, pontos, vitorias, empates, derrotas, golsMarcados, golsSofridos, getSaldoDeGols()
+        );
+    }
+
+    // Getters
+    public Long getId() { return id; }
     public String getNome() { return nome; }
     public int getPontos() { return pontos; }
     public int getVitorias() { return vitorias; }
+    public int getEmpates() { return empates; }
+    public int getDerrotas() { return derrotas; }
+    public int getGolsMarcados() { return golsMarcados; }
+    public int getGolsSofridos() { return golsSofridos; }
+
+    // Igualdade baseada em identidade de negócio (id), não na referência do objeto
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Time)) return false;
+        Time outro = (Time) o;
+        return id != null && id.equals(outro.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return obterEstatisticas();
+    }
 }
